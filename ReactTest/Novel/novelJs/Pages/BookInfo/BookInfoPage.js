@@ -5,7 +5,8 @@ import {
     Button,
     StatusBar,
     ScrollView,
-    StyleSheet
+    StyleSheet,
+    InteractionManager
 } from 'react-native';
 import TopCoverView from './TopCoverView'
 import Dpi from '../../Utils/Dpi'
@@ -15,17 +16,61 @@ import BookInfoList from './BookInfoList'
 import BookInfoRecommend from './BookInfoRecommend'
 import BookInfoButton from './BookInfoButton'
 import TopActionBar from './TopActionBar'
+import ThemesManager from '../../Themes/ThemesManager'
+import { Bars } from 'react-native-loader';
 export default class BookInfoPage extends Component {
     constructor(props) {
         super(props);
         this.topActionBarRef = null;
+        this.state = {
+            renderPlaceholderOnly: true,
+        };
+        this.timer = null;
     }
     render() {
         let that = this;
+        //<Bars size={10} color={ThemesManager.themesHightLightColor} />
+        if (that.state.renderPlaceholderOnly) {
+            return (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <Bars size={10} color={ThemesManager.themesHightLightColor} />
+                </View>
+            )
+        } else {
+            return that._renderView(that)
+        }
+    }
+
+    shouldComponentUpdate(nextProps, nextState, nextContext) {
+        // if (this.state.listViewData !== nextState.listViewData) {
+        //     return true;
+        // } else {
+        //}
+        if (this.state.renderPlaceholderOnly !== nextState.renderPlaceholderOnly) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    componentDidMount() {
+        let that = this;
+        this.timer = setTimeout(function () {
+            that.setState({ renderPlaceholderOnly: false });
+        }, 2000);
+        // InteractionManager.runAfterInteractions(() => {
+        //     this.setState({ renderPlaceholderOnly: false });
+        // });
+    }
+
+    componentWillUnmount() {
+        this.timer && clearTimeout(this.timer)
+    }
+
+    _renderView(that) {
         return (
             <View style={viewStyle.containerStyle}>
                 <ScrollView
-
                     style={viewStyle.scrollViewStyle}
                     onScroll={(event) => {
                         //发送滑动事件的通知

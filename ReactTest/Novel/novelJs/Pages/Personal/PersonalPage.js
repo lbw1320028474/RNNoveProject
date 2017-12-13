@@ -6,7 +6,8 @@ import {
     StatusBar,
     ScrollView,
     StyleSheet,
-    TouchableOpacity
+    TouchableOpacity,
+    InteractionManager
 } from 'react-native';
 import Dpi from '../../Utils/Dpi'
 import GlobleKey from '../../Globle/GlobleKey'
@@ -14,16 +15,109 @@ import GlobleVar from '../../Globle/GlobleVar'
 import AppUtils from '../../Utils/AppUtils'
 import ThemesManager from '../../Themes/ThemesManager'
 import HDivideLine from '../../Views/HDivideLine'
+import { Bars } from 'react-native-loader';
 export default class PersonalPage extends Component {
     constructor(props) {
         super(props);
         this.topActionBarRef = null;
+        this.state = {
+            renderPlaceholderOnly: true,
+        };
+        this.timer = null;
+    }
+
+    componentDidMount() {
+        let that = this;
+        // this.timer = setTimeout(function () {
+        //     that.setState({ renderPlaceholderOnly: false });
+        // }, 2000);
+        InteractionManager.runAfterInteractions(() => {
+            this.setState({ renderPlaceholderOnly: false });
+        });
+    }
+
+    componentWillUnmount() {
+        this.timer && clearTimeout(this.timer)
     }
 
     shouldComponentUpdate(nextProps, nextState, nextContext) {
-        return false;
-
+        if (this.renderPlaceholderOnly !== nextState.renderPlaceholderOnly) {
+            return true;
+        } else {
+            return false;
+        }
     }
+
+    _renderView(that) {
+        return (
+            <ScrollView>
+                <View style={viewStyle.userDataStyle}>
+                    <Image resizeMode='stretch' style={viewStyle.userCoverStyle} source={require('../../../novelResource/personal_cover.png')}></Image>
+                    <View style={{ marginLeft: Dpi.d(20) }}>
+                        <View style={{ flexDirection: 'row' }}>
+                            <TouchableOpacity onPress={() => { alert('登录') }}>
+                                <Text style={viewStyle.loadTextStyle}>登录</Text>
+                            </TouchableOpacity>
+                        </View>
+                        <Text style={viewStyle.readTimeTextStyle}>立即体验你的阅读时光</Text>
+                    </View>
+                </View>
+                <View style={viewStyle.itemContainerStyle}>
+                    <TouchableOpacity>
+                        <View style={viewStyle.itemSub2ContainerStyle}>
+                            <View style={viewStyle.itemSubContainerStyle}>
+                                <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_coin.png')}></Image>
+                                <Text style={viewStyle.itemTextStyle}>金币商城</Text>
+                            </View>
+                            <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
+                        </View>
+                    </TouchableOpacity>
+                    <HDivideLine></HDivideLine>
+                    <TouchableOpacity>
+                        <View style={viewStyle.itemSub2ContainerStyle}>
+                            <View style={viewStyle.itemSubContainerStyle}>
+                                <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_rank.png')}></Image>
+                                <Text style={viewStyle.itemTextStyle}>邀请排行</Text>
+                            </View>
+                            <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+                <View style={viewStyle.itemContainerStyle}>
+                    <TouchableOpacity>
+                        <View style={viewStyle.itemSub2ContainerStyle}>
+                            <View style={viewStyle.itemSubContainerStyle}>
+                                <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_aboutme.png')}></Image>
+                                <Text style={viewStyle.itemTextStyle}>关于我们</Text>
+                            </View>
+                            <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
+                        </View>
+                    </TouchableOpacity>
+                    <HDivideLine></HDivideLine>
+                    <TouchableOpacity>
+                        <View style={viewStyle.itemSub2ContainerStyle}>
+                            <View style={viewStyle.itemSubContainerStyle}>
+                                <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_feedback.png')}></Image>
+                                <Text style={viewStyle.itemTextStyle}>反馈建议</Text>
+                            </View>
+                            <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
+                        </View>
+                    </TouchableOpacity>
+                    <HDivideLine></HDivideLine>
+                    <TouchableOpacity>
+                        <View style={viewStyle.itemSub2ContainerStyle}>
+                            <View style={viewStyle.itemSubContainerStyle}>
+                                <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_setting.png')}></Image>
+                                <Text style={viewStyle.itemTextStyle}>设置</Text>
+                            </View>
+                            <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </ScrollView>
+        )
+    }
+
     render() {
         let that = this;
         return (
@@ -39,71 +133,9 @@ export default class PersonalPage extends Component {
                         <Text style={viewStyle.actionTitleTextStyle}>个人</Text>
                     </View>
                 </View>
-                <ScrollView>
-                    <View style={viewStyle.userDataStyle}>
-                        <Image resizeMode='stretch' style={viewStyle.userCoverStyle} source={require('../../../novelResource/personal_cover.png')}></Image>
-                        <View style={{ marginLeft: Dpi.d(20) }}>
-                            <View style={{ flexDirection: 'row' }}>
-                                <TouchableOpacity onPress={() => { alert('登录') }}>
-                                    <Text style={viewStyle.loadTextStyle}>登录</Text>
-                                </TouchableOpacity>
-                            </View>
-                            <Text style={viewStyle.readTimeTextStyle}>立即体验你的阅读时光</Text>
-                        </View>
-                    </View>
-                    <View style={viewStyle.itemContainerStyle}>
-                        <TouchableOpacity>
-                            <View style={viewStyle.itemSub2ContainerStyle}>
-                                <View style={viewStyle.itemSubContainerStyle}>
-                                    <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_coin.png')}></Image>
-                                    <Text style={viewStyle.itemTextStyle}>金币商城</Text>
-                                </View>
-                                <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
-                            </View>
-                        </TouchableOpacity>
-                        <HDivideLine></HDivideLine>
-                        <TouchableOpacity>
-                            <View style={viewStyle.itemSub2ContainerStyle}>
-                                <View style={viewStyle.itemSubContainerStyle}>
-                                    <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_rank.png')}></Image>
-                                    <Text style={viewStyle.itemTextStyle}>邀请排行</Text>
-                                </View>
-                                <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={viewStyle.itemContainerStyle}>
-                        <TouchableOpacity>
-                            <View style={viewStyle.itemSub2ContainerStyle}>
-                                <View style={viewStyle.itemSubContainerStyle}>
-                                    <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_aboutme.png')}></Image>
-                                    <Text style={viewStyle.itemTextStyle}>关于我们</Text>
-                                </View>
-                                <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
-                            </View>
-                        </TouchableOpacity>
-                        <HDivideLine></HDivideLine>
-                        <TouchableOpacity>
-                            <View style={viewStyle.itemSub2ContainerStyle}>
-                                <View style={viewStyle.itemSubContainerStyle}>
-                                    <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_feedback.png')}></Image>
-                                    <Text style={viewStyle.itemTextStyle}>反馈建议</Text>
-                                </View>
-                                <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
-                            </View>
-                        </TouchableOpacity>
-                        <HDivideLine></HDivideLine>
-                        <TouchableOpacity>
-                            <View style={viewStyle.itemSub2ContainerStyle}>
-                                <View style={viewStyle.itemSubContainerStyle}>
-                                    <Image resizeMode='stretch' style={viewStyle.itemLeftIconStyle} source={require('../../../novelResource/personal_setting.png')}></Image>
-                                    <Text style={viewStyle.itemTextStyle}>设置</Text>
-                                </View>
-                                <Image resizeMode='stretch' style={viewStyle.itemRightIconStyle} source={require('../../../novelResource/to_right_icon.png')}></Image>
-                            </View>
-                        </TouchableOpacity>
-                    </View>
-                </ScrollView>
+                {
+                    that.state.renderPlaceholderOnly ? <View></View> : that._renderView(that)
+                }
             </View >
         )
     }

@@ -68,7 +68,7 @@ var styles = StyleSheet.create({
         flex: 1,
         flexDirection: 'row',
         alignItems: 'center',
-        height: Dpi.d(260)
+        height: GlobleVar.noverListItemHeight
     },
     bookCoverStyle: {
         marginLeft: 10,

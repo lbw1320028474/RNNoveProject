@@ -8,7 +8,9 @@ import {
     StyleSheet,
     ListView,
     TouchableHighlight,
-    TouchableOpacity
+    TouchableOpacity,
+    InteractionManager,
+    RefreshControl
 } from 'react-native';
 import Dpi from '../../Utils/Dpi'
 import GlobleKey from '../../Globle/GlobleKey'
@@ -17,15 +19,20 @@ import AppUtils from '../../Utils/AppUtils'
 import ThemesManager from '../../Themes/ThemesManager'
 import HDivideLine from '../../Views/HDivideLine'
 import { SwipeListView, SwipeRow } from 'react-native-swipe-list-view';
+import { Bars } from 'react-native-loader';
 export default class BookCasePage extends Component {
     constructor(props) {
         super(props);
         this.topActionBarRef = null;
         this.swipeListRef = null;
         this.canUpdata = false;
+        this.refresRef = null;
+        this.timer = null;  //测试定时器
         this.ds = new ListView.DataSource({ rowHasChanged: (r1, r2) => r1 !== r2 });
         this.state = {
-            listViewData: Array(0).fill('').map((_, i) => i)
+            renderPlaceholderOnly: true,
+            jsonData: null,
+            listViewData: Array(20).fill('').map((_, i) => i),
         };
     }
     //删除数据
@@ -38,17 +45,82 @@ export default class BookCasePage extends Component {
         //this.swipeListRef.updataTip
     }
 
+    _toUpRow(secId, rowId, rowMap, that) {
+        that.canUpdata = true;
+        rowMap[`${secId}${rowId}`].closeRow();
+        const newData = [...this.state.listViewData];
+        toUoRow = newData[rowId]
+        newData.splice(rowId, 1);
+        newData.unshift(toUoRow);
+        this.setState({ listViewData: newData });
+    }
+
+    componentWillUnmount() {
+        this.timer && clearTimeout(this.timer)
+    }
+
+    componentDidMount() {
+        let that = this;
+        this.timer = setTimeout(function () {
+            that.setState({ renderPlaceholderOnly: false });
+        }, 2000);
+    }
+
+
     shouldComponentUpdate(nextProps, nextState, nextContext) {
         // if (this.state.listViewData !== nextState.listViewData) {
         //     return true;
         // } else {
         //}
-        if (this.canUpdata) {
+        if (this.canUpdata || (this.state.renderPlaceholderOnly !== nextState.renderPlaceholderOnly)) {
             this.canUpdata = false;
             return true;
         } else {
             return false;
         }
+    }
+
+    _renderView(that) {
+        return (
+            <View style={viewStyle.contentContainerStyle}>
+                <SwipeListView
+                    ref={ref => { this.swipeListRef = ref }}
+                    swipeToOpenPercent={100}
+                    previewRowIndex={3}
+                    closeOnRowBeginSwipe={true}
+                    refreshContral={
+                        <RefreshControl
+                            refreshing={false}
+                            ref={ref => that.refresRef = ref}
+                            onRefresh={() => alert('开始刷新')}
+                        ></RefreshControl>
+                    }
+                    footerView={
+                        that._addLikeBook(that)
+                    }
+                    dataSource={this.ds.cloneWithRows(this.state.listViewData)}
+                    renderRow={data => (
+                        that._renderRowView(data, that)
+                    )}
+                    renderHiddenRow={(data, secId, rowId, rowMap) => (
+                        that._renderHiddenRowView(data, secId, rowId, rowMap, that)
+                        // <View style={viewStyle.rowBack}>
+                        //     <Text>Left</Text>
+                        //     <View style={[viewStyle.backRightBtn, viewStyle.backRightBtnLeft]}>
+                        //         <Text style={viewStyle.backTextWhite}>Right</Text>
+                        //     </View>
+                        //     <TouchableOpacity viewStyle={[viewStyle.backRightBtn, viewStyle.backRightBtnRight]} onPress={() => this.deleteRow(secId, rowId, rowMap)}>
+                        //         <Text style={viewStyle.backTextWhite}>Delete</Text>
+                        //     </TouchableOpacity>
+                        // </View>
+                    )}
+                    closeOnRowPress={true}
+                    rightOpenValue={-1 * Dpi.d(200)}
+                    stopRightSwipe={-1 * Dpi.d(220)}
+                    disableRightSwipe={true}
+                />
+            </View >
+        )
     }
 
     render() {
@@ -58,46 +130,37 @@ export default class BookCasePage extends Component {
                 <View style={viewStyle.actionBarStyle}>
                     <View style={viewStyle.containerStyle}>
                         <Text style={viewStyle.actionTitleTextStyle}>书架</Text>
+                        <TouchableOpacity style={viewStyle.searchContainerStyle} onPress={() => {
+                            that.props.navigation.navigate('KEY_SearchPage');
+                        }}>
+                            <Image resizeMode='stretch' style={viewStyle.searchIconStyle} source={require('../../../novelResource/bookcase_search_icon.png')}></Image>
+                        </TouchableOpacity>
                     </View>
                 </View>
-                <View style={viewStyle.contentContainerStyle}>
-                    <SwipeListView
-                        ref={ref => { this.swipeListRef = ref }}
-                        swipeToOpenPercent={100}
-                        previewFirstRow={true}
-                        closeOnRowBeginSwipe={true}
-                        footerView={
-                            <TouchableOpacity activeOpacity={0.8}>
-                                <View style={viewStyle.addBookContainerStyle}>
-                                    <Image resizeMode='stretch' style={viewStyle.addBookIconStyle} source={require('../../../novelResource/bookcase_addbook.png')}></Image>
-                                    <Text>添加喜欢的小说</Text>
-                                </View>
-                            </TouchableOpacity>
-                        }
-                        dataSource={this.ds.cloneWithRows(this.state.listViewData)}
-                        renderRow={data => (
-                            that._renderRowView(data, that)
-                        )}
-                        renderHiddenRow={(data, secId, rowId, rowMap) => (
-                            that._renderHiddenRowView(data, secId, rowId, rowMap, that)
-                            // <View style={viewStyle.rowBack}>
-                            //     <Text>Left</Text>
-                            //     <View style={[viewStyle.backRightBtn, viewStyle.backRightBtnLeft]}>
-                            //         <Text style={viewStyle.backTextWhite}>Right</Text>
-                            //     </View>
-                            //     <TouchableOpacity viewStyle={[viewStyle.backRightBtn, viewStyle.backRightBtnRight]} onPress={() => this.deleteRow(secId, rowId, rowMap)}>
-                            //         <Text style={viewStyle.backTextWhite}>Delete</Text>
-                            //     </TouchableOpacity>
-                            // </View>
-                        )}
-                        closeOnRowPress={true}
-                        rightOpenValue={-1 * Dpi.d(200)}
-                        stopRightSwipe={-1 * Dpi.d(220)}
-                        disableRightSwipe={true}
-                    />
+                {
+                    this.state.renderPlaceholderOnly ? that._loadView(that) : that._renderView(that)
+                }
+            </View>
+        )
+    }
 
+    _loadView(that) {
+        return (
+            <View style={{ alignItems: 'center', height: Dpi.d(200), justifyContent: 'space-around' }}>
+                <Bars size={10} color={ThemesManager.themesHightLightColor} />
+                {that._addLikeBook(that)}
+            </View>
+        )
+    }
+
+    _addLikeBook(that) {
+        return (
+            <TouchableOpacity activeOpacity={0.8}>
+                <View style={viewStyle.addBookContainerStyle}>
+                    <Image resizeMode='stretch' style={viewStyle.addBookIconStyle} source={require('../../../novelResource/bookcase_addbook.png')}></Image>
+                    <Text>添加喜欢的小说</Text>
                 </View>
-            </View >
+            </TouchableOpacity>
         )
     }
 
@@ -122,7 +185,7 @@ export default class BookCasePage extends Component {
         return (
             <View style={viewStyle.hiddenViewRootViwStyle}>
                 <TouchableOpacity activeOpacity={0.8} onPress={() => {
-                    alert('置顶' + data)
+                    that._toUpRow(secId, rowId, rowMap, that)
                 }}>
                     <Text style={viewStyle.hiddenToUpView}>置顶</Text>
                 </TouchableOpacity>
@@ -148,7 +211,6 @@ var viewStyle = StyleSheet.create({
     actionBarStyle: {   //工具栏
         backgroundColor: ThemesManager.themesHightLightColor,
         justifyContent: 'flex-end',
-        alignItems: 'center',
         height: GlobleVar.pageActionBarHeight + GlobleVar.stateBarAdjustViewHeight
     },
     actionTitleTextStyle: { //工具栏文字
@@ -244,5 +306,15 @@ var viewStyle = StyleSheet.create({
         paddingVertical: Dpi.d(5),
         fontSize: Dpi.s(30),
         color: ThemesManager.themesBlackTextMainColorSub3
-    }
+    },
+    searchIconStyle: {
+        width: Dpi.d(32),
+        height: Dpi.d(45),
+    },
+    searchContainerStyle: {
+        width: Dpi.d(32),
+        height: Dpi.d(45),
+        position: 'absolute',
+        right: Dpi.d(20)
+    },
 })

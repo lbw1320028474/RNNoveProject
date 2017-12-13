@@ -27,6 +27,6 @@ var styles = StyleSheet.create({
     lineStyle: {
         opacity: 0.2,
         backgroundColor: '#666666',
-        height: AppUtils.pixel
+        height: 1
     }
 });

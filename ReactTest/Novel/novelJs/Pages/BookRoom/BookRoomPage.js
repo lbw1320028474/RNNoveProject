@@ -17,19 +17,6 @@ import {
     StackNavigator,
 } from 'react-navigation';
 import AppUtils from '../../Utils/AppUtils'
-//填充状态栏高度,从20的版本开始支持状态栏
-// import SearchInputView from './SearchInputView'
-// import BookRoomViewPage from './BookRoomViewPage'
-// import ModelEntry from './ModelEntry'
-// import GlobleVar from '../../Globle/GlobleVar'
-// import BookTabView from './BookTabView'
-// import { ViewPager } from 'rn-viewpager';
-// import BookCaseList from './BookCaseList'
-// import ViewPageTitle from './ViewPageTitle'
-
-
-////selectCallBack, selectedIndex, normaltabColor, selectedTabColor, textSize, tabIndexLineStyle
-//var upTabView = <PagerTitleIndicator titles={['主编力推-女生', '主编力推-男生', '女屏新书', '男屏新书']} />
 import SearchInputView from './SearchInputView'
 import BannerView from './BannerView'
 import ModelEntryView from './ModelEntryView'
@@ -47,35 +34,7 @@ var bookRoomPageData = require("../../../../bookroomtestdata.json"); //小说书
 let sectionTestData = [];
 let headViewHDvideLineHeight = 20;      //列表头部分隔条高度
 export default class BookRoomPage extends Component {
-    // getDefaultProps() {
-    //     // this.props.lineColor = 'gray';
-    //     // this.props.lineWidth = AppUtils.pixel;
-    // }
 
-
-
-    //     <ScrollView
-    //     onScroll
-    //     ref={e => { this.scrollRef = e }}
-    //     scrollEnabled={true}
-    //     onScroll={(event) => {
-    //         // console.log(event.nativeEvent.contentOffset.y + ' + ' + scrollViewOffsetY)
-    //         scrollViewOffsetY = event.nativeEvent.contentOffset.y;
-    //         if (event.nativeEvent.contentOffset.y == 0 || Math.abs(scrollViewOffsetY - topContentHeight - GlobleVar.stateBarAdjustViewHeight) <= 1) {
-    //             this._changeScrollViewEnAble();
-    //         }
-    //         console.log(scrollViewOffsetY + " + " + topContentHeight + " + " + Math.abs(scrollViewOffsetY - topContentHeight) + " + " + (scrollViewOffsetY - topContentHeight - GlobleVar.stateBarAdjustViewHeight));
-    //         this._changeSearchBgOpacity(event.nativeEvent.contentOffset.y)
-    //     }}
-
-    // >
-    //     <BannerView ></BannerView>
-    //     <ModelEntryView></ModelEntryView>
-    //     <BookTabView
-    //         subListWantScroll={() => {
-    //             this._changeScrollViewEnAble();
-    //         }}></BookTabView>
-    // </ScrollView>
     constructor(props) {
         super(props);
         this.state = { searchBgOpaCity: 0.0, viewPageTitleIndex: 0 };
@@ -83,9 +42,6 @@ export default class BookRoomPage extends Component {
         this.flatListRef = null;
         this.searchBgOpa = null;
         this.scrollRef = null;  //是否可滑动的索引
-        // this._renderSectionChildItem = this._renderSectionChildItem.bind(this);  //Sectionlist绑定
-        // this._renderSectionGroupItem = this._renderSectionGroupItem.bind(this);
-        //alert(bookRoomPageData.data[0].modelName);
 
         this._toDetalWithData();
     }
@@ -94,8 +50,7 @@ export default class BookRoomPage extends Component {
 
         let tabTitleData = [];
         let index = 0;
-        let modelOffsetY = 1 + GlobleVar.headViewHDvideLineHeight + GlobleVar.noverlistModelTitleHeight + 5;
-        // console.log('banner数据 = ' + bookRoomPageData.data[0].bannerItems[0].bannerImage);
+        let modelOffsetY = GlobleVar.BannerViewPageHeight + GlobleVar.ModelEntryHeight + ((GlobleVar.stateBarAdjustViewHeight === 0) ? Dpi.d(45) : 0) + GlobleVar.stateBarAdjustViewHeight + 5;
         sectionTestData.push(
             {
                 category: 0,        //用来区分小说是属于什么类型的
@@ -105,7 +60,7 @@ export default class BookRoomPage extends Component {
             }
         );
         index += 1;
-        modelOffsetY = modelOffsetY + GlobleVar.BannerViewPageHeight + GlobleVar.ModelEntryHeight;
+        // modelOffsetY = modelOffsetY + GlobleVar.ModelEntryHeight;
         sectionTestData.push(
             {
                 category: 0,
@@ -116,6 +71,7 @@ export default class BookRoomPage extends Component {
         );
         index += 1;
         let novelListCatetory = 0;
+        modelOffsetY = modelOffsetY + GlobleVar.listTabViewHeight + GlobleVar.stateBarAdjustViewHeight;
         for (var i = 0; i < bookRoomPageData.data[2].listModel.length; ++i) {
             novelListModel = bookRoomPageData.data[2].listModel[i];
             tabTitleData.push(
@@ -133,7 +89,7 @@ export default class BookRoomPage extends Component {
                     key: index,
                 }
             )
-            modelOffsetY = modelOffsetY + GlobleVar.noverlistModelTitleHeight;
+            modelOffsetY = modelOffsetY + GlobleVar.noverlistModelTitleHeight + + GlobleVar.noverListItemMargginBottom;
             index += 1;
             for (var j = 0; j < novelListModel.listItem.length; ++j) {
                 sectionTestData.push(
@@ -145,7 +101,7 @@ export default class BookRoomPage extends Component {
                     }
                 )
                 index += 1;
-                modelOffsetY = modelOffsetY + GlobleVar.noverListItemHeight + GlobleVar.noverListItemMargginBottom;
+                modelOffsetY = modelOffsetY + GlobleVar.noverListItemHeight;
             }
             novelListCatetory += 1;
         }
@@ -153,44 +109,8 @@ export default class BookRoomPage extends Component {
     shouldComponentUpdate(nextProps, nextState, nextContext) {
         return false;
     }
-
-    //     <SectionList
-    //     scrollRenderAheadDistance={50}
-    //     onViewableItemsChanged={(info) => { console.log(info.minimumViewTime) }}
-    //     initialNumToRender={4}
-    //     pageSize={4}
-    //     ListHeaderComponent={this._renderSectionHead}
-    //     stickySectionHeadersEnabled={true}
-    //     renderItem={(this._renderSectionChildItem)}
-    //     renderSectionHeader={this._renderSectionGroupItem}
-    //     sections={sectionTestData}
-    // />
-    // _getItemType(x) {
-    //     if (x === 0) {
-    //         return 'head';
-    //     } else if (x === 1) {
-    //         return 'tab';
-    //     } else if (x % 10 == 0) {
-    //         return 'group';
-    //     } else {
-    //         return 'child';
-    //     }
-    // }
     render() {
         let that = this;
-
-
-        // for (var i = 0; i < 68; ++i) {
-        //     sectionTestData.push(
-        //         {
-        //             type: this._getItemType(i),
-        //             data: '雷帮文' + i,
-        //             key: i,
-        //             title: '主编力荐',
-        //             sectionTitleColor: '#f456a0'
-        //         }
-        //     )
-        // }
         return (
             <View style={styles.rootViewStyle}>
                 <StatusBar
@@ -237,32 +157,20 @@ export default class BookRoomPage extends Component {
         })
 
     }
-    //<Image resizeMode='stretch' style={{ width: AppUtils.size.width, height: 130 }} source={require('../../../novelResource/modelentry.png')}></Image>
-    //列表的头部组件
-    //<ModelEntryView></ModelEntryView>
-    // _renderSectionHead = () => {
-    //     return (
-    //         <View>
-    //             <BannerView></BannerView>
-    //             <ModelEntryView></ModelEntryView>
-    //             <View style={styles.headBottomDividestyle}></View>
-    //         </View>
-    //     )
-    // }
 
     //列表的实际内容
     _renderSectionChildItem = info => {
         let myitem = info.item
         let myindex = info.index
-        // let sectionIndex = info.section.index
-        // let shop = this.state.status[sectionIndex]
-        // let statusItem = shop.items[index]
+
         if (myitem.itemType === 'head') {
-            //console.log('banner = ' + myitem.data.banner[0].bannerImage);
             return (
                 <View>
                     <BannerView navigation={this.props.navigation} dataParams={myitem.data.banner}></BannerView>
                     <ModelEntryView navigation={this.props.navigation} dataParams={myitem.data.moderItems}></ModelEntryView>
+                    {
+                        (GlobleVar.stateBarAdjustViewHeight === 0) ? <View style={styles.headBottomDividestyle}></View> : null
+                    }
                 </View>
             )
         } else if (myitem.itemType === 'group') {
@@ -276,7 +184,6 @@ export default class BookRoomPage extends Component {
             )
         } else if (myitem.itemType === 'tab') {
             return (
-                // <View style={{ height: 60, width: AppUtils.size.width }}><Text>这里是同标题tabview</Text></View>
                 <View>
                     <TitleTabView
                         ref={ref => this.tabViewRef = ref}
@@ -301,37 +208,9 @@ export default class BookRoomPage extends Component {
         }
     }
 
-    // //列表的标题
-    // _renderSectionGroupItem = info => {
-    //     return (
-    //         <View style={styles.sectionGroupTitleStyle}>
-    //             <Text style={[{ fontSize: 22, textAlign: 'center' }, { color: info.section.sectionTitleColor }]}>{info.section.groupName}</Text>
-    //         </View>
-    //     )
-    // }
 
     _toSearch() {
-        alert('去搜索');
-    }
-
-    // //修改搜索栏背景透明度
-    // _changeSearchBgOpacity(offsetY) {
-    //     let scrolledY = offsetY;
-    //     let sBgOpacity = 0;
-    //     let headHeight = GlobleVar.BannerViewPageHeight + GlobleVar.ModelEntryHeight;
-    //     if (scrolledY <= headHeight) {
-    //         sBgOpacity = scrolledY / headHeight;
-    //     } else {
-    //         sBgOpacity = 1;
-    //     }
-    //     if (sBgOpacity < 1) {
-    //         this.searchBgOpa._changeBgOpacity(sBgOpacity);
-    //         // 异步发布事件，非阻塞，无需等待订阅者处理结束
-    //     }
-    // }
-    //点击了搜索
-    _toSearch() {
-        alert("搜索");
+        this.props.navigation.navigate('KEY_SearchPage');
     }
 
 };
@@ -396,5 +275,9 @@ var styles = StyleSheet.create({
     listMoreIconStyle: {
         width: Dpi.d(35),
         height: Dpi.d(35)
-    }
+    },
+    headBottomDividestyle: {
+        height: Dpi.d(45),
+        backgroundColor: ThemesManager.pageBgColor
+    },
 })

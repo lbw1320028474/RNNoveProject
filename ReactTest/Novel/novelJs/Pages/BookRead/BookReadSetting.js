@@ -52,6 +52,7 @@ export default class BottomToolView extends Component {
                     toValue: 0,
                     duration: 400,// 动画持续的时间（单位是毫秒），默认为500
                     // delay: 0,// 在一段时间之后开始动画（单位是毫秒），默认为0。
+                    useNativeDriver: true, // <-- 加上这一行
                 }).start(() => {
                     BottomToolView.isShow = false;
                 });
@@ -62,6 +63,7 @@ export default class BottomToolView extends Component {
                     toValue: 1,
                     duration: 400,// 动画持续的时间（单位是毫秒），默认为500
                     // delay: 0,// 在一段时间之后开始动画（单位是毫秒），默认为0。
+                    useNativeDriver: true, // <-- 加上这一行
                 }).start(() => {
                     BottomToolView.isShow = true;
                 });

@@ -94,9 +94,6 @@ export default class TitleTabView extends Component {
         }
     }
 
-    //selectCallBack, selectedIndex, normaltabColor, selectedTabColor, textSize, tabIndexLineStyle
-    //<View style={[{ width: 50, height: 2, borderRadius: 5, backgroundColor: '#ff0000' }, this.props.navStyle]}></View>
-    //<Text style={[styles.titleStyle, {(j === this.props.tabIndex) ? this.props.titleSelectedStyle : this.props.titleNormalStyle}]} >{titles[j]}</Text>
     render() {
         let that = this;
         titles = that.props.titles;
@@ -181,28 +178,4 @@ var styles = StyleSheet.create({
         height: Dpi.d(0),
         marginHorizontal: Dpi.d(0)
     },
-    // bgImageStyle: {
-    //     position: 'absolute',
-    //     height: viewHeight + AppUtils.stateBarAdjustViewHeight,
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    // },
-    // inputStyle: {
-    //     flexDirection: 'row',
-    //     height: 35,
-    //     width: AppUtils.size.width - 60,
-    //     backgroundColor: '#ffffff',
-    //     justifyContent: 'center',
-    //     alignItems: 'center',
-    //     marginLeft: 40,
-    //     marginRight: 40,
-    //     borderRadius: 50,
-    //     opacity: 0.5,
-    //     marginBottom: 7
-    // },
-    // searchImageStyle: {
-    //     width: 15,
-    //     height: 15,
-    //     marginRight: 10
-    // }
 });
